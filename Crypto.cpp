@@ -1,8 +1,7 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #define MAX_KEY 64
 #define LINE 2
 
-//Глобальная инициализация
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -11,13 +10,11 @@
 #include "Window.h"
 #include "Characters.h"
 
-//Запуск программы
 int main(int argc, char *argv[])
 {
     int i, j, a;
     char symbol = 0;
 
-    //Создание окон
     createWindow(MAX_KEY / LINE + 2, LINE + 3);
     system("title Cryption by GC");
     std::cout << "\x1b[?25l\x1b[H";
@@ -43,14 +40,12 @@ int main(int argc, char *argv[])
 
     if (argc - 1)
     {
-        //Инициализация
         bool isVisibleCursor;
         char count = 0;
         char key[MAX_KEY];
         clock_t msec;
         for (i = 0; i < MAX_KEY; i++) key[i] = SPACE;
 
-        //Цикл
         while (symbol != ENTER)
         {
             symbol = 0;
@@ -106,7 +101,6 @@ int main(int argc, char *argv[])
             std::cout << "\x1b[H\x1b[1B\x1b[" << count % (MAX_KEY / LINE) + 1 << 'C';
         }
 
-        //Инициализация перед открытием файла
         long size_file;
         if (count < MAX_KEY) key[count] = '\0';
 
@@ -118,47 +112,38 @@ int main(int argc, char *argv[])
         }
         std::cout << "\x1b[H\x1b[1B\x1b[1CLoading...\x1b[B\x1b[2GPlease wait";
 
-        //Открытие файла
         for (a = 0; a < argc; a++)
         {
             std::fstream in(argv[a + 1], std::ios::binary | std::ios::in);
             if (in.is_open())
             {
-                //Инициализация
                 std::fstream get_size(argv[a + 1], std::ios::in);
                 get_size.seekp(0, std::ios::end);
                 size_file = (long)get_size.tellg();
                 get_size.close();
 
-                //Создание массива со размером файла
                 char* text = new char[size_file];
 
-                //Данные из файла в массив
                 in.read(text, size_file);
                 in.close();
 
-                //Шифрование или расшифрование
                 for (i = 0, j = strlen(key); i < size_file; i++)
                 {
                     text[i] ^= key[i % j];
                 }
 
-                //Данные из массива в файл
                 std::fstream out(argv[a + 1], std::ios::binary | std::ios::out);
                 out.write(text, size_file);
                 out.close();
 
-                //Очистка
                 delete[] text;
             }
-            else std::cout << "\nНе найден файл\n";
         }
     }
     else
     {
         std::cout << "\x1b[H\x1b[1B\x1b[8CPlease upload file to the\x1b[1B\x1b[27Dapplication, as in a folder";
 
-        //Выход
         symbol = _getch();
     }
 
